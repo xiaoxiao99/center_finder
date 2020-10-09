@@ -153,10 +153,10 @@ const getCameraSelection = async () => {
   const devices = await navigator.mediaDevices.enumerateDevices();
   const videoDevices = devices.filter(device => device.kind === 'videoinput');
   const options = videoDevices.map(videoDevice => {
-    return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`;
+    return `<option value="${videoDevice.groupId}">${videoDevice.groupId}</option>`;
   });
   cameraOptions.innerHTML = options.join('');
-  debugger
+  //debugger
   change_source();
 };
 
@@ -180,7 +180,7 @@ const constraints = {
     console.log("deviceID: " + cameraOptions.value)
     const updatedConstraints = {
       ...constraints,
-      deviceId: {
+      groupId: {
         exact: cameraOptions.value
       }
     };
