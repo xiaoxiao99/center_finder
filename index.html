@@ -59,10 +59,16 @@ body{
 	
 	</video>
 </div>
+<div class="video-options" style="background-color: white;">
+  <select name="" id="" class="custom-select">
+      <option value="">Select camera</option>
+  </select>
+</div>
+
 <script>
 
 var video = document.querySelector("#videoElement");
-
+/*
 if (navigator.mediaDevices.getUserMedia) {
   navigator.mediaDevices.getUserMedia({ video: true })
     .then(function (stream) {
@@ -72,6 +78,11 @@ if (navigator.mediaDevices.getUserMedia) {
       console.log("Something went wrong!");
     });
 }
+*/
+
+
+
+
 
 // Make the DIV element draggable:
 
@@ -129,6 +140,71 @@ function dragElement(elmnt) {
     e.stopPropagation();
   }
 }
+
+
+///////
+//reference
+//https://www.digitalocean.com/community/tutorials/front-and-rear-camera-access-with-javascripts-getusermedia
+
+const cameraOptions = document.querySelector('.video-options>select');
+
+
+const getCameraSelection = async () => {
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  const videoDevices = devices.filter(device => device.kind === 'videoinput');
+  const options = videoDevices.map(videoDevice => {
+    return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`;
+  });
+  cameraOptions.innerHTML = options.join('');
+  debugger
+  change_source();
+};
+
+const constraints = {
+  video: {
+    width: {
+      min: 320,
+      ideal: 1920,
+      max: 2560,
+    },
+    height: {
+      min: 240,
+      ideal: 1080,
+      max: 1440
+    },
+  }
+};
+
+ var change_source = () => {
+  if ('mediaDevices' in navigator && navigator.mediaDevices.getUserMedia) {
+    console.log("deviceID: " + cameraOptions.value)
+    const updatedConstraints = {
+      ...constraints,
+      deviceId: {
+        exact: cameraOptions.value
+      }
+    };
+    startStream(updatedConstraints);
+  }
+};
+
+const startStream = async (constraints) => {
+  const stream = await navigator.mediaDevices.getUserMedia(constraints);
+  handleStream(stream);
+};
+
+const handleStream = (stream) => {
+  console.log("started")
+  video.srcObject = stream;
+  //play.classList.add('d-none');
+  //pause.classList.remove('d-none');
+  //screenshot.classList.remove('d-none');
+  //streamStarted = true;
+};
+
+cameraOptions.onchange = change_source
+getCameraSelection();
+
 
 </script>
 </body>
